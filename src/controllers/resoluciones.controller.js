@@ -1,19 +1,8 @@
 const axios = require("axios");
-const https = require("https"); // Importamos https nativo
+const https = require("https");
 
 const crearResolucion = async (req, res) => {
-    // ... dentro de crearResolucion ...
-
-    console.log("--- DEBUG ---");
-    console.log("URL:", process.env.ROSARIO_API_URL);
-    console.log("Key existe:", !!process.env.ROSARIO_API_KEY); // Debería decir true
-    console.log(
-        "Key (primeros caracteres):",
-        process.env.ROSARIO_API_KEY?.substring(0, 5)
-    );
-    console.log("-------------");
-    // 1. Recibimos los datos que manda React
-    const { sua, anio, leyenda } = req.body;
+    const { sua, anio, solucion } = req.body;
 
     // Validamos datos básicos
     if (!sua || !anio) {
@@ -25,7 +14,7 @@ const crearResolucion = async (req, res) => {
         const payload = {
             fecha: "15/11/2025 07:00:00", // Podrías usar new Date() aquí
             tipo: 1,
-            solucion: leyenda || "",
+            solucion: solucion || "",
             usuario: "mramire7",
             id_area: 2098,
             id_motivo_cierre: 0,
