@@ -1,20 +1,38 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const morgan = require("morgan");
-const resolucionesRoutes = require("./routes/resoluciones.routes");
+import express from "express";
+import cors from "cors";
+import morgan from "morgan";
+import dotenv from "dotenv";
+import passport from "passport";
+
+import "./middlewares/passport.js";
+
+// IMPORTANTE: En "type": "module", es OBLIGATORIO poner la extensión .js
+// al importar tus propios archivos.
+import resolucionesRouter from "./routes/resolucionesRouter.js";
+import authRouter from "./routes/authRouter.js";
+import usersRouter from "./routes/usersRouter.js";
+import "./config/database.js";
+//import { dbConnection } from "./database/config.js"; // Si ya creaste la config de DB
+
+// Configurar variables de entorno
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// --- Conectar a BD (Si ya tienes el archivo creado) ---
+// dbConnection();
+
 // --- Middlewares ---
-app.use(morgan("dev")); // Ver logs en consola
-app.use(cors()); // Permitir peticiones de otros dominios (tu React)
-app.use(express.json()); // Entender JSON que viene del Body
+app.use(morgan("dev"));
+app.use(cors());
+app.use(express.json());
+app.use(passport.initialize());
 
 // --- Rutas ---
-// Todo lo que venga a /api/resoluciones lo maneja este archivo
-app.use("/api/resoluciones", resolucionesRoutes);
+app.use("/api/resoluciones", resolucionesRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter);
 
 // --- Servidor ---
 app.listen(PORT, () => {
