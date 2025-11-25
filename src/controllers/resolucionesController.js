@@ -1,7 +1,7 @@
-const axios = require("axios");
-const https = require("https");
+import axios from "axios";
+import https from "https";
 
-const crearResolucion = async (req, res) => {
+export const crearResolucion = async (req, res) => {
     const { sua, anio, solucion } = req.body;
 
     // Validamos datos básicos
@@ -12,7 +12,7 @@ const crearResolucion = async (req, res) => {
     try {
         // 2. Preparamos el cuerpo para la API de Rosario
         const payload = {
-            fecha: "15/11/2025 07:00:00", // Podrías usar new Date() aquí
+            fecha: "15/11/2025 07:00:00", // Considera usar new Date().toISOString() o similar si necesitas dinamismo
             tipo: 1,
             solucion: solucion || "",
             usuario: "mramire7",
@@ -21,7 +21,7 @@ const crearResolucion = async (req, res) => {
             image: "",
         };
 
-        // 3. Enviamos la petición a la API REAL (usando las variables de entorno)
+        // 3. Enviamos la petición a la API REAL
         const urlDestino = `${process.env.ROSARIO_API_URL}/solicitudes/resolver/${sua}-${anio}`;
 
         const httpsAgent = new https.Agent({
@@ -46,13 +46,15 @@ const crearResolucion = async (req, res) => {
 
         // Manejo de error seguro
         const status = error.response ? error.response.status : 500;
-        console.log(error.response);
-        const data = error.response
-            ? error.response.data
-            : { error: "Error interno del servidor" };
+
+        if (error.response) {
+            console.log("Detalle error externo:", error.response.data);
+        }
+
+        const data = error.response?.data || {
+            error: "Error interno del servidor",
+        };
 
         return res.status(status).json(data);
     }
 };
-
-module.exports = { crearResolucion };
