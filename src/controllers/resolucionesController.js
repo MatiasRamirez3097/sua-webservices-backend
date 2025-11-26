@@ -1,8 +1,13 @@
 import axios from "axios";
 import https from "https";
+import { formatDateForApi } from "../utils/dataFormatter.js";
 
 export const crearResolucion = async (req, res) => {
-    const { sua, anio, solucion } = req.body;
+    const { fecha, sua, anio, solucion } = req.body;
+
+    const formatedDate = formatDateForApi(fecha);
+
+    const userApi = req.user.email.split("@")[0];
 
     // Validamos datos básicos
     if (!sua || !anio) {
@@ -12,10 +17,10 @@ export const crearResolucion = async (req, res) => {
     try {
         // 2. Preparamos el cuerpo para la API de Rosario
         const payload = {
-            fecha: "15/11/2025 07:00:00", // Considera usar new Date().toISOString() o similar si necesitas dinamismo
+            fecha: formatedDate, // Considera usar new Date().toISOString() o similar si necesitas dinamismo
             tipo: 1,
             solucion: solucion || "",
-            usuario: "mramire7",
+            usuario: userApi,
             id_area: 2098,
             id_motivo_cierre: 0,
             image: "",
