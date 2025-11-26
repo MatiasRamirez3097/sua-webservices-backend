@@ -43,10 +43,9 @@ const authController = {
         try {
             const hashPassword = bcrypt.hashSync(req.body.password);
             req.body.password = hashPassword;
-            console.log(req.body);
             user = await User.create(req.body);
-            console.log(user);
-            const { email } = user;
+
+            const { email, name } = user;
             token = jwt.sign({ email }, process.env.SECRET_KEY);
             return res.status(200).json({
                 success: true,
