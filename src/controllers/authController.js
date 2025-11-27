@@ -9,22 +9,19 @@ const authController = {
         try {
             const { email: emailBody, password } = req.body;
             const user = await User.findOne({ email: emailBody });
-            console.log(user);
             if (!user) throw new Error("No user exists with this email");
-            console.log(bcrypt.hashSync("00Nightmare!"));
             const passValidated = bcrypt.compareSync(password, user.password);
             if (!passValidated)
                 throw new Error("The email/password is incorrect");
-            console.log("paso pass validation");
 
-            const { email, name } = user;
+            const { email, name, role } = user;
 
             const token = jwt.sign({ email }, process.env.SECRET_KEY);
 
             return res.status(200).json({
                 success: true,
                 token: token,
-                user: { email, name },
+                user: { email, name, role },
                 message: "Sign in succesfully",
             });
         } catch (err) {
@@ -63,11 +60,11 @@ const authController = {
         }
     },
     loginWithToken: (req, res) => {
-        const { email, name } = req.user;
+        const { email, name, role } = req.user;
 
         res.json({
             success: true,
-            user: { email, name },
+            user: { email, name, role },
             message: "Sign in successfully",
         });
     },
