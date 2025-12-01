@@ -79,6 +79,25 @@ const usersController = {
             error,
         });
     },
+    deleteOne: async (req, res, next) => {
+        const id = req.params.id;
+        let success = true;
+        let el = null;
+        let error = null;
+
+        try {
+            el = await User.findByIdAndDelete(id).exec();
+        } catch (err) {
+            success = false;
+            error = err;
+        }
+
+        res.json({
+            response: el,
+            success,
+            error,
+        });
+    },
 };
 
 export default usersController;

@@ -8,5 +8,6 @@ usersRouter.get(["/", "/:search"], getAll);
 usersRouter.post("/create", createOne);
 usersRouter.get("/getone/:id", getOne);
 usersRouter.put("/update/:id", updateOne);
+usersRouter.delete("delete/:id", deleteOne);
 
 export default usersRouter;
