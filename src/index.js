@@ -8,10 +8,12 @@ import "./middlewares/passport.js";
 
 // IMPORTANTE: En "type": "module", es OBLIGATORIO poner la extensión .js
 // al importar tus propios archivos.
-import resolucionesRouter from "./routes/resolucionesRouter.js";
+import batchsRouter from "./routes/batchsRouter.js";
 import authRouter from "./routes/authRouter.js";
 import usersRouter from "./routes/usersRouter.js";
 import "./config/database.js";
+
+import { startScheduler } from "./jobs/scheduler.js";
 //import { dbConnection } from "./database/config.js"; // Si ya creaste la config de DB
 
 // Configurar variables de entorno
@@ -30,9 +32,12 @@ app.use(express.json());
 app.use(passport.initialize());
 
 // --- Rutas ---
-app.use("/api/resoluciones", resolucionesRouter);
+app.use("/api/batchs", batchsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
+
+// jobs
+startScheduler();
 
 // --- Servidor ---
 app.listen(PORT, () => {
