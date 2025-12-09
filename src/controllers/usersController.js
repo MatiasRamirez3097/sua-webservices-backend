@@ -25,7 +25,7 @@ const usersController = {
         let error = null;
 
         try {
-            el = await User.findById(id).exec();
+            el = await User.findOne({ _id: id, isDeleted: false }).exec();
         } catch (err) {
             success = false;
             error = err;
@@ -45,16 +45,21 @@ const usersController = {
                   },
               }
             : {};
+
         let success = true;
         let els;
         let error = null;
 
         try {
-            els = await User.find(search);
+            els = await User.find({
+                ...search,
+                isDeleted: false,
+            });
         } catch (err) {
             success = false;
             error = err;
         }
+
         res.json({
             response: els,
             success,
@@ -68,7 +73,11 @@ const usersController = {
         let error = null;
 
         try {
-            el = await User.findOneAndUpdate({ _id: id }, req.body);
+            el = await User.findOneAndUpdate(
+                { _id: id, isDeleted: false },
+                req.body,
+                { new: true }
+            );
         } catch (err) {
             success = false;
             error = err;
@@ -78,6 +87,29 @@ const usersController = {
             success,
             error,
         });
+    },
+    softDeleteOne: async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            const user = await User.findByIdAndUpdate(
+                id,
+                { isDeleted: true, deletedAt: new Date() },
+                { new: true }
+            );
+
+            if (!user)
+                return res
+                    .status(404)
+                    .json({ message: "Usuario no encontrado" });
+
+            return res.status(200).json({
+                message: "Usuario marcado como eliminado",
+                response: user,
+            });
+        } catch (error) {
+            return res.status(500).json({ message: error.message });
+        }
     },
 };
 
