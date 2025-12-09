@@ -44,7 +44,17 @@ const BatchSchema = Schema(
             default: "PENDING",
         },
     },
-    { timestamps: true }
+    {
+        timestamps: true,
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true },
+    }
 );
+
+BatchSchema.virtual("items", {
+    ref: "BatchItem",
+    localField: "_id",
+    foreignField: "batch",
+});
 
 export default model("Batch", BatchSchema);

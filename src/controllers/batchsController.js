@@ -90,6 +90,32 @@ const batchsController = {
             error,
         });
     },
+    getOne: async (req, res, next) => {
+        const id = req.params.id;
+        const { onlyErrors } = req.params;
+        let matchCriteria = {};
+        let success = true;
+        let el;
+        let error = null;
+
+        if (onlyErrors === "true") matchCriteria.status = "ERROR";
+
+        try {
+            el = await Batch.findById(id).populate({
+                path: "items",
+                match: matchCriteria,
+            });
+        } catch (err) {
+            success = false;
+            error = err;
+        }
+
+        res.json({
+            response: el,
+            success,
+            error,
+        });
+    },
 };
 
 export default batchsController;
