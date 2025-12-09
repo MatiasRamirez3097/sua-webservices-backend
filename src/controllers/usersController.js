@@ -1,7 +1,11 @@
 import User from "../models/User.js";
+import bcrypt from "bcryptjs";
 
 const usersController = {
     createOne: async (req, res, next) => {
+        const hashPassword = bcrypt.hashSync(req.body.password);
+        req.body.password = hashPassword;
+
         let el;
         let success = true;
         let error = null;
@@ -12,6 +16,7 @@ const usersController = {
             success = false;
             error = err;
         }
+
         res.json({
             response: el,
             success,
