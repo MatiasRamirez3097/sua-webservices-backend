@@ -58,7 +58,6 @@ const usersController = {
         try {
             els = await User.find({
                 ...search,
-                isDeleted: false,
             });
         } catch (err) {
             success = false;
@@ -97,11 +96,7 @@ const usersController = {
         try {
             const { id } = req.params;
 
-            const user = await User.findByIdAndUpdate(
-                id,
-                { isDeleted: true, deletedAt: new Date() },
-                { new: true }
-            );
+            const user = await User.deleteById(id);
 
             if (!user)
                 return res
@@ -109,7 +104,7 @@ const usersController = {
                     .json({ message: "Usuario no encontrado" });
 
             return res.status(200).json({
-                message: "Usuario marcado como eliminado",
+                message: "Usuario eliminado",
                 response: user,
             });
         } catch (error) {

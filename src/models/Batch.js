@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import mongooseDelete from "mongoose-delete";
 
 const BatchSchema = Schema(
     {
@@ -50,6 +51,11 @@ const BatchSchema = Schema(
         toObject: { virtuals: true },
     }
 );
+
+BatchSchema.plugin(mongooseDelete, {
+    deletedAt: true, // Guarda la fecha de borrado
+    overrideMethods: "all", // ¡CLAVE! Sobrescribe find, findOne, count, etc.
+});
 
 BatchSchema.virtual("items", {
     ref: "BatchItem",

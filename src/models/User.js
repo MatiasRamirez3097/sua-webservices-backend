@@ -1,4 +1,5 @@
 import { model, Schema } from "mongoose";
+import mongooseDelete from "mongoose-delete";
 
 const userSchema = Schema(
     {
@@ -24,19 +25,16 @@ const userSchema = Schema(
             enum: ["admin", "manager", "reader"],
             default: "reader",
         },
-        isDeleted: {
-            type: Boolean,
-            default: false,
-        },
-        deletedAt: {
-            type: Date,
-            default: null,
-        },
     },
     {
         timestamps: true,
     }
 );
+
+userSchema.plugin(mongooseDelete, {
+    deletedAt: true, // Guarda la fecha de borrado
+    overrideMethods: "all", // ¡CLAVE! Sobrescribe find, findOne, count, etc.
+});
 
 const User = model("users", userSchema);
 
