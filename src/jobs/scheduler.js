@@ -115,7 +115,7 @@ export const startScheduler = () => {
                     const res = await axios.post(url, payload, {
                         headers: {
                             "X-Gravitee-Api-Key": process.env.ROSARIO_API_KEY,
-                            "Content-Type": "application/json",
+                            "Content-Type": "application/json; charset=utf-8",
                         },
                         proxy: false,
                         httpsAgent,
