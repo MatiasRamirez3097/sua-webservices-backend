@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import mongooseDelete from "mongoose-delete";
 
 const BatchItemSchema = Schema(
     {
@@ -32,6 +33,10 @@ const BatchItemSchema = Schema(
     { timestamps: true }
 );
 
+BatchItemSchema.plugin(mongooseDelete, {
+    deletedAt: true, // Guarda la fecha de borrado
+    overrideMethods: "all", // ¡CLAVE! Sobrescribe find, findOne, count, etc.
+});
 // Índices para búsqueda rápida
 // Ayuda al Cron Job a encontrar los "PENDING" rápido
 BatchItemSchema.index({ status: 1 });
