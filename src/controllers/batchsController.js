@@ -92,18 +92,24 @@ const batchsController = {
     },
     getOne: async (req, res, next) => {
         const id = req.params.id;
-        const { onlyErrors } = req.params;
+        const { onlyErrors, itemsFields, fields } = req.query;
+        console.log("campos", fields);
+
+        let fieldsToSelect = fields ? fields.split(",").join(" ") : "";
+        let itemsFieldsToSelect = itemsFields
+            ? itemsFields.split(",").join(" ")
+            : "";
         let matchCriteria = {};
         let success = true;
         let el;
         let error = null;
-
-        if (onlyErrors === "true") matchCriteria.status = "ERROR";
+        if (onlyErrors == "true") matchCriteria.status = "ERROR";
 
         try {
-            el = await Batch.findById(id).populate({
+            el = await Batch.findById(id).select(fieldsToSelect).populate({
                 path: "items",
                 match: matchCriteria,
+                select: itemsFieldsToSelect,
             });
         } catch (err) {
             success = false;
