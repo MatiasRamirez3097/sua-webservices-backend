@@ -6,6 +6,21 @@ import BatchItem from "../models/BatchItem.js";
 
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
+const cleanText = (text) => {
+    if (!text) return "";
+
+    return (
+        text
+            .toString()
+            // 1. Reemplazamos la comilla doble recta (") por la comilla tipográfica de cierre (”)
+            // Visualmente es casi igual, pero NO rompe el JSON.
+            .replace(/"/g, "\u201D")
+
+            // 2. Opcional: Aseguramos que otras variantes también se unifiquen
+            .replace(/“/g, "\u201D")
+            .replace(/\n/g, " ")
+    );
+};
 // Helper Strategy Builder
 const buildStrategy = (item) => {
     // 1. Desestructuramos los datos del Lote Padre (Batch)
@@ -28,7 +43,7 @@ const buildStrategy = (item) => {
                     // API Externa (Español) : Tus Datos (Inglés/Genéricos)
                     fecha: date, // Viene de batch.date
                     usuario: apiUser, // El usuario calculado arriba
-                    solucion: extraData.leyenda, // Mapeamos 'leyenda' a 'solucion'
+                    solucion: cleanText(extraData.leyenda), // Mapeamos 'leyenda' a 'solucion'
                     tipo: Number(extraData.tipoResolucion), // Aseguramos que sea número (0, 1, 2)
                     id_area: 2098, // Hardcodeado o variable según necesites
                     id_motivo_cierre: Number(extraData.id_motivo_cierre),
