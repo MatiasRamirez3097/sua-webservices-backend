@@ -12,6 +12,10 @@ const BatchSchema = Schema(
             enum: ["RESOLUCION", "INTERVENCION", "ASIGNACION"],
         },
 
+        idArea: {
+            type: Number,
+            required: true,
+        },
         // 2. Metadata
         date: { type: String, required: true },
 

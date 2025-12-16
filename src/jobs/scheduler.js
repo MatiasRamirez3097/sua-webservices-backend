@@ -24,7 +24,7 @@ const cleanText = (text) => {
 // Helper Strategy Builder
 const buildStrategy = (item) => {
     // 1. Desestructuramos los datos del Lote Padre (Batch)
-    const { extraData, date, user, processType } = item.batch;
+    const { extraData, date, idArea, user, processType } = item.batch;
 
     // 2. Preparamos el Usuario
     // La API externa espera el usuario sin dominio (ej: "mramirez"),
@@ -45,7 +45,7 @@ const buildStrategy = (item) => {
                     usuario: apiUser, // El usuario calculado arriba
                     solucion: cleanText(extraData.leyenda), // Mapeamos 'leyenda' a 'solucion'
                     tipo: Number(extraData.tipoResolucion), // Aseguramos que sea número (0, 1, 2)
-                    id_area: 2098, // Hardcodeado o variable según necesites
+                    id_area: idArea, // Hardcodeado o variable según necesites
                     id_motivo_cierre: Number(extraData.id_motivo_cierre),
                     image: "", // Campo obligatorio aunque vaya vacío
                 },
@@ -63,7 +63,7 @@ const buildStrategy = (item) => {
                     observacion: extraData.observacion, // Asumimos que el front mandó 'observacion'
                     id_tipo_intervencion: Number(extraData.idTipoIntervencion),
                     // Agrega aquí otros campos si la API de intervenciones los pide (ej: id_area)
-                    id_area: 2098,
+                    id_area: idArea,
                 },
             };
 

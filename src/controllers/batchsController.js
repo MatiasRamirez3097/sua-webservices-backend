@@ -12,8 +12,7 @@ const batchsController = {
           "records": [ {"sua":"123", "anio":"2024"}, ... ] // Antes 'expedientes'
        }
     */
-        console.log(req.body);
-        const { type, date, data, records, scheduledFor } = req.body;
+        const { type, date, data, idArea, records, scheduledFor } = req.body;
 
         // 1. Validation
         if (!records || records.length === 0) {
@@ -32,6 +31,7 @@ const batchsController = {
             // 2. Create Parent (Batch)
             const newBatch = await Batch.create({
                 processType: type,
+                idArea: idArea,
                 date: formatDateForApi(date), // "DD/MM/YYYY HH:MM:SS"
                 user: req.user._id, // User ID from Token
                 extraData: data,
