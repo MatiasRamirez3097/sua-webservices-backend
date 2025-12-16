@@ -79,7 +79,9 @@ const batchsController = {
         let error = null;
 
         try {
-            els = await Batch.find(search).populate("user");
+            els = await Batch.find(search)
+                .sort({ createdAt: -1 })
+                .populate("user");
         } catch (err) {
             success = false;
             error = err;
