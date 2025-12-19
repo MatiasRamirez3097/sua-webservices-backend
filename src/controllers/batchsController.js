@@ -124,6 +124,42 @@ const batchsController = {
             error,
         });
     },
+    reschedule: async (req, res) => {
+        const { id } = req.params;
+        const { newDate } = req.body;
+        try {
+            const batch = await Batch.findById(id);
+            if (!batch) throw new Error("Lote no encontrado");
+            if (batch.status !== "PENDING")
+                throw new Error(
+                    "No se puede reprogramar un lote que ya se ejecuto o que esta en ejecucion."
+                );
+            if (batch.scheduledFor) {
+                const now = new Date();
+                const scheduledTime = new Date(batch.scheduledFor);
+                const difference = scheduledTime - now;
+
+                const ONE_HOUR = 60 * 60 * 1000;
+
+                if (difference > 0 && difference < ONE_HOUR) {
+                    throw new Error(
+                        "Bloqueado: La hora de ejecucion ya paso o falta menos de una hora."
+                    );
+                }
+
+                if (difference <= 0)
+                    throw newError(
+                        "BLoqueado: La hora de ejecucion ya paso o falta menos de una hora."
+                    );
+            }
+            batch.scheduledAt = newDate;
+            await batch.save();
+
+            res.json({ success: true, response: batch });
+        } catch (error) {
+            res.status(400).json({ success: false, error: error.message });
+        }
+    },
 };
 
 export default batchsController;
