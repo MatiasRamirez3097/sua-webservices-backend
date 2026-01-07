@@ -65,6 +65,34 @@ const batchsController = {
             });
         }
     },
+    deleteOne: async (req, res, next) => {
+        const { id } = req.params;
+
+        try {
+            const batch = await Batch.findById(id);
+            if (!batch) throw new Error("Lote no encontrado");
+
+            if (batch.status === "PROCESSING") {
+                throw new Error(
+                    "No se puede eliminar un lote que se esta ejecutando."
+                );
+            }
+
+            if (batch.totalRecords !== batch.errorsCount) {
+                throw new Error(
+                    "No se puede eliminar un lote con resultados correctos."
+                );
+            }
+
+            await batch.delete();
+
+            await BatchItem.delete({ batch: id });
+
+            res.json({ success: true, message: "Lote eliminado con exito." });
+        } catch (error) {
+            res.status(500).json({ success: false, error: error.message });
+        }
+    },
     getAll: async (req, res, next) => {
         const search = req.params.search
             ? {
