@@ -4,7 +4,7 @@ import batchsController from "../controllers/batchsController.js";
 
 import passport from "../middlewares/passport.js";
 
-const { createOne, getAll, getOne, reschedule } = batchsController;
+const { createOne, deleteOne, getAll, getOne, reschedule } = batchsController;
 
 const authMiddleware = passport.authenticate("jwt", { session: false });
 
@@ -14,5 +14,6 @@ batchsRouter.get(["/", "/:search"], getAll);
 batchsRouter.post("/", authMiddleware, createOne);
 batchsRouter.get("/getone/:id", getOne);
 batchsRouter.patch("/reschedule/:id", reschedule);
+batchsRouter.delete("/deleteone/:id", deleteOne);
 
 export default batchsRouter;
