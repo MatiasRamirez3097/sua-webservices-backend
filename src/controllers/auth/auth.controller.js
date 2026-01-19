@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import User from "../../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import "dotenv/config.js";
@@ -25,6 +25,7 @@ const authController = {
                 message: "Sign in succesfully",
             });
         } catch (err) {
+            console.log(err);
             return res.status(400).json({
                 response: err.name,
                 success: false,

@@ -1,17 +1,13 @@
-import User from "../models/User.js";
-import bcrypt from "bcryptjs";
+import Vehicle from "../../models/Vehicle";
 
-const usersController = {
+const vehicleController = {
     createOne: async (req, res, next) => {
-        const hashPassword = bcrypt.hashSync(req.body.password);
-        req.body.password = hashPassword;
-
         let el;
         let success = true;
         let error = null;
 
         try {
-            el = await User.create(req.body);
+            el = await Vehicle.create(req.body);
         } catch (err) {
             success = false;
             error = err;
@@ -30,7 +26,7 @@ const usersController = {
         let error = null;
 
         try {
-            el = await User.findOne({ _id: id, isDeleted: false }).exec();
+            el = await Vehicle.findOne({ _id: id, isDeleted: false }).exec();
         } catch (err) {
             success = false;
             error = err;
@@ -56,7 +52,7 @@ const usersController = {
         let error = null;
 
         try {
-            els = await User.find({
+            els = await Vehicle.find({
                 ...search,
             });
         } catch (err) {
@@ -77,7 +73,7 @@ const usersController = {
         let error = null;
 
         try {
-            el = await User.findOneAndUpdate(
+            el = await Vehicle.findOneAndUpdate(
                 { _id: id, isDeleted: false },
                 req.body,
                 { new: true }
@@ -96,16 +92,16 @@ const usersController = {
         try {
             const { id } = req.params;
 
-            const user = await User.deleteById(id);
+            const vehicle = await Vehicle.deleteById(id);
 
-            if (!user)
+            if (!vehicle)
                 return res
                     .status(404)
-                    .json({ message: "Usuario no encontrado" });
+                    .json({ message: "Vehiculo no encontrado" });
 
             return res.status(200).json({
-                message: "Usuario eliminado",
-                response: user,
+                message: "Vehiculo eliminado",
+                response: vehicle,
             });
         } catch (error) {
             return res.status(500).json({ message: error.message });
@@ -113,4 +109,4 @@ const usersController = {
     },
 };
 
-export default usersController;
+export default vehicleController;

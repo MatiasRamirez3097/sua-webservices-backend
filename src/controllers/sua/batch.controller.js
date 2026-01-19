@@ -1,8 +1,8 @@
-import Batch from "../models/Batch.js";
-import BatchItem from "../models/BatchItem.js";
-import { formatDateForApi } from "../utils/dateFormatter.js";
+import Batch from "../../models/Batch.js";
+import BatchItem from "../../models/BatchItem.js";
+import { formatDateForApi } from "../../utils/date.util.js";
 
-const batchsController = {
+const batchController = {
     createOne: async (req, res) => {
         /* Body esperado (Frontend):
        {
@@ -190,4 +190,4 @@ const batchsController = {
     },
 };
 
-export default batchsController;
+export default batchController;

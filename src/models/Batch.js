@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import mongooseDelete from "mongoose-delete";
 
-const BatchSchema = Schema(
+const BatchSchema = new Schema(
     {
         // 1. Process Definition
         processType: {
