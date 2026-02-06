@@ -113,6 +113,7 @@ const batchController = {
         } catch (err) {
             success = false;
             error = err;
+            console.log(err);
         }
         res.json({
             response: els,

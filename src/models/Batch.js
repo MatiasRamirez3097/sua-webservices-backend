@@ -21,7 +21,7 @@ const BatchSchema = new Schema(
 
         user: {
             type: Schema.Types.ObjectId,
-            ref: "users", // Asegúrate que tu modelo de usuario se exporte como "users"
+            ref: "User", // Asegúrate que tu modelo de usuario se exporte como "users"
             required: true,
         },
 

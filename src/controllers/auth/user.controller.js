@@ -77,11 +77,9 @@ const userController = {
         let error = null;
 
         try {
-            el = await User.findOneAndUpdate(
-                { _id: id, isDeleted: false },
-                req.body,
-                { new: true }
-            );
+            el = await User.findOneAndUpdate({ _id: id }, req.body, {
+                new: true,
+            });
         } catch (err) {
             success = false;
             error = err;
@@ -113,4 +111,4 @@ const userController = {
     },
 };
 
-export default usersController;
+export default userController;

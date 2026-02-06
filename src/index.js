@@ -10,7 +10,7 @@ import "./middlewares/passport.js";
 // al importar tus propios archivos.
 import batchRoutes from "./routes/batch.routes.js";
 import authRoutes from "./routes/auth.routes.js";
-import userRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
 import "./config/database.js";
 
 import { startScheduler } from "./jobs/scheduler.js";
@@ -32,7 +32,7 @@ app.use(express.json());
 app.use(passport.initialize());
 
 // --- Rutas ---
-app.use("/api/batchs", batchRoutes);
+app.use("/api/batches", batchRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 
