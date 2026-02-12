@@ -43,7 +43,7 @@ const buildStrategy = (item) => {
                     // API Externa (Español) : Tus Datos (Inglés/Genéricos)
                     fecha: date, // Viene de batch.date
                     usuario: apiUser, // El usuario calculado arriba
-                    solucion: cleanText(extraData.leyenda), // Mapeamos 'leyenda' a 'solucion'
+                    solucion: cleanText(extraData.legend), // Mapeamos 'leyenda' a 'solucion'
                     tipo: Number(extraData.tipoResolucion), // Aseguramos que sea número (0, 1, 2)
                     id_area: idArea, // Hardcodeado o variable según necesites
                     id_motivo_cierre: Number(extraData.id_motivo_cierre),
