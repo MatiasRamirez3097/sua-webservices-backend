@@ -17,13 +17,13 @@ const DriverSchema = new Schema({
     active: { type: Boolean, default: true },
 });
 
-DriverSchema.virtual("fullName").get(function () {
+/*DriverSchema.virtual("fullName").get(function () {
     return;
-});
+});*/
 
 DriverSchema.plugin(mongooseDelete, {
     deletedAt: true, // Guarda la fecha de borrado
     overrideMethods: "all", // ¡CLAVE! Sobrescribe find, findOne, count, etc.
 });
 
-export default DriverSchema;
+export default model("Driver", DriverSchema);

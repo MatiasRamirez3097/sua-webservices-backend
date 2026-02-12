@@ -1,4 +1,4 @@
-import Vehicle from "../../models/Vehicle";
+import Vehicle from "../../models/Vehicle.js";
 
 const vehicleController = {
     createOne: async (req, res, next) => {
@@ -76,7 +76,7 @@ const vehicleController = {
             el = await Vehicle.findOneAndUpdate(
                 { _id: id, isDeleted: false },
                 req.body,
-                { new: true }
+                { new: true },
             );
         } catch (err) {
             success = false;

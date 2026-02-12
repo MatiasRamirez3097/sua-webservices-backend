@@ -1,6 +1,6 @@
-import Driver from "../../models/Vehicle";
+import Driver from "../../models/Driver.js";
 
-const driversController = {
+const driverController = {
     createOne: async (req, res, next) => {
         let el;
         let success = true;
@@ -76,7 +76,7 @@ const driversController = {
             el = await Driver.findOneAndUpdate(
                 { _id: id, isDeleted: false },
                 req.body,
-                { new: true }
+                { new: true },
             );
         } catch (err) {
             success = false;
@@ -109,4 +109,4 @@ const driversController = {
     },
 };
 
-export default driversController;
+export default driverController;

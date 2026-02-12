@@ -11,6 +11,12 @@ import "./middlewares/passport.js";
 import batchRoutes from "./routes/batch.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
+
+//IMPORT RODADOS ROUTERS
+import driverRoutes from "./routes/driver.routes.js";
+import ownerRoutes from "./routes/owner.routes.js";
+import vehicleRoutes from "./routes/vehicle.routes.js";
+
 import "./config/database.js";
 
 import { startScheduler } from "./jobs/scheduler.js";
@@ -35,6 +41,9 @@ app.use(passport.initialize());
 app.use("/api/batches", batchRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/rodados/drivers", driverRoutes);
+app.use("/api/rodados/owners", ownerRoutes);
+app.use("/api/rodados/vehicles", vehicleRoutes);
 
 // jobs
 startScheduler();

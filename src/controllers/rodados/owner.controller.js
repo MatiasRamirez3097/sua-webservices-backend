@@ -1,4 +1,4 @@
-import Owner from "../../models/Owner";
+import Owner from "../../models/Owner.js";
 
 const ownerController = {
     createOne: async (req, res, next) => {
@@ -76,7 +76,7 @@ const ownerController = {
             el = await Owner.findOneAndUpdate(
                 { _id: id, isDeleted: false },
                 req.body,
-                { new: true }
+                { new: true },
             );
         } catch (err) {
             success = false;
