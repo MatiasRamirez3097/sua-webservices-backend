@@ -118,7 +118,7 @@ export const startScheduler = () => {
                 status: "PENDING",
             }).populate({
                 path: "batch",
-                populate: { path: "user", model: "users" },
+                populate: "user",
             });
 
             // Procesar Items
