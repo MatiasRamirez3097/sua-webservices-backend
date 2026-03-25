@@ -8,9 +8,15 @@ import "./middlewares/passport.js";
 
 // IMPORTANTE: En "type": "module", es OBLIGATORIO poner la extensión .js
 // al importar tus propios archivos.
-import batchsRouter from "./routes/batchsRouter.js";
-import authRouter from "./routes/authRouter.js";
-import usersRouter from "./routes/usersRouter.js";
+import batchRoutes from "./routes/batch.routes.js";
+import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
+
+//IMPORT RODADOS ROUTERS
+import driverRoutes from "./routes/driver.routes.js";
+import ownerRoutes from "./routes/owner.routes.js";
+import vehicleRoutes from "./routes/vehicle.routes.js";
+
 import "./config/database.js";
 
 import { startScheduler } from "./jobs/scheduler.js";
@@ -32,9 +38,12 @@ app.use(express.json());
 app.use(passport.initialize());
 
 // --- Rutas ---
-app.use("/api/batchs", batchsRouter);
-app.use("/api/auth", authRouter);
-app.use("/api/users", usersRouter);
+app.use("/api/batches", batchRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/rodados/drivers", driverRoutes);
+app.use("/api/rodados/owners", ownerRoutes);
+app.use("/api/rodados/vehicles", vehicleRoutes);
 
 // jobs
 startScheduler();

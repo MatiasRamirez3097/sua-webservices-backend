@@ -1,7 +1,7 @@
-import User from "../models/User.js";
+import User from "../../models/User.js";
 import bcrypt from "bcryptjs";
 
-const usersController = {
+const userController = {
     createOne: async (req, res, next) => {
         const hashPassword = bcrypt.hashSync(req.body.password);
         req.body.password = hashPassword;
@@ -77,11 +77,9 @@ const usersController = {
         let error = null;
 
         try {
-            el = await User.findOneAndUpdate(
-                { _id: id, isDeleted: false },
-                req.body,
-                { new: true }
-            );
+            el = await User.findOneAndUpdate({ _id: id }, req.body, {
+                new: true,
+            });
         } catch (err) {
             success = false;
             error = err;
@@ -113,4 +111,4 @@ const usersController = {
     },
 };
 
-export default usersController;
+export default userController;

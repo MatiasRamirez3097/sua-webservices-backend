@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import mongooseDelete from "mongoose-delete";
 
-const BatchSchema = Schema(
+const BatchSchema = new Schema(
     {
         // 1. Process Definition
         processType: {
@@ -21,7 +21,7 @@ const BatchSchema = Schema(
 
         user: {
             type: Schema.Types.ObjectId,
-            ref: "users", // Asegúrate que tu modelo de usuario se exporte como "users"
+            ref: "User", // Asegúrate que tu modelo de usuario se exporte como "users"
             required: true,
         },
 

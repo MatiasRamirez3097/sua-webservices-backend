@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import mongooseDelete from "mongoose-delete";
 
-const BatchItemSchema = Schema(
+const BatchItemSchema = new Schema(
     {
         // 1. Vinculación con el Padre (Parent Link)
         batch: {
