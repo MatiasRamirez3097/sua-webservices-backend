@@ -45,7 +45,7 @@ const BatchSchema = new Schema(
         status: {
             // Cambio: state -> status
             type: String,
-            enum: ["PENDING", "PROCESSING", "COMPLETED"], // Cambio: Inglés
+            enum: ["PENDING", "PROCESSING", "COMPLETED", "CANCELED"], // Cambio: Inglés
             default: "PENDING",
         },
     },
@@ -53,7 +53,7 @@ const BatchSchema = new Schema(
         timestamps: true,
         toJSON: { virtuals: true },
         toObject: { virtuals: true },
-    }
+    },
 );
 
 BatchSchema.plugin(mongooseDelete, {

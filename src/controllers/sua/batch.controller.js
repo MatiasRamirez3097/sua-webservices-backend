@@ -65,34 +65,58 @@ const batchController = {
             });
         }
     },
-    deleteOne: async (req, res, next) => {
+
+    cancel: async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            const batch = await Batch.findById(id);
+
+            if (!batch) throw new Error("Lote no encontrado");
+
+            if (batch.status !== "PENDING") {
+                throw new Error(
+                    "Solo se puede cancelar un lote en estado PENDING",
+                );
+            }
+
+            batch.status = "CANCELED";
+            await batch.save();
+
+            res.json({ success: true, response: batch });
+        } catch (error) {
+            res.status(400).json({ success: false, error: error.message });
+        }
+    },
+
+    deleteOne: async (req, res) => {
         const { id } = req.params;
 
         try {
             const batch = await Batch.findById(id);
+
             if (!batch) throw new Error("Lote no encontrado");
 
-            if (batch.status === "PROCESSING") {
+            if (!["CANCELED", "COMPLETED"].includes(batch.status)) {
                 throw new Error(
-                    "No se puede eliminar un lote que se esta ejecutando."
+                    "Solo se pueden eliminar lotes cancelados o completados.",
                 );
             }
 
-            if (batch.totalRecords !== batch.errorsCount) {
-                throw new Error(
-                    "No se puede eliminar un lote con resultados correctos."
-                );
-            }
-
-            await batch.delete();
+            await batch.delete(); // soft delete
 
             await BatchItem.delete({ batch: id });
 
-            res.json({ success: true, message: "Lote eliminado con exito." });
+            res.json({
+                success: true,
+                message: "Lote eliminado con éxito.",
+            });
         } catch (error) {
-            res.status(500).json({ success: false, error: error.message });
+            console.log("ERROR DELETE:", error);
+            res.status(400).json({ success: false, error: error.message });
         }
     },
+
     getAll: async (req, res, next) => {
         const search = req.params.search
             ? {
@@ -121,6 +145,7 @@ const batchController = {
             error,
         });
     },
+
     getOne: async (req, res, next) => {
         const id = req.params.id;
         const { onlyErrors, itemsFields, fields } = req.query;
@@ -153,35 +178,23 @@ const batchController = {
             error,
         });
     },
+
     reschedule: async (req, res) => {
         const { id } = req.params;
         const { newDate } = req.body;
+
         try {
             const batch = await Batch.findById(id);
+
             if (!batch) throw new Error("Lote no encontrado");
-            if (batch.status !== "PENDING")
-                throw new Error(
-                    "No se puede reprogramar un lote que ya se ejecuto o que esta en ejecucion."
-                );
-            if (batch.scheduledFor) {
-                const now = new Date();
-                const scheduledTime = new Date(batch.scheduledFor);
-                const difference = scheduledTime - now;
 
-                const ONE_HOUR = 60 * 60 * 1000;
-
-                if (difference > 0 && difference < ONE_HOUR) {
-                    throw new Error(
-                        "Bloqueado: La hora de ejecucion ya paso o falta menos de una hora."
-                    );
-                }
-
-                if (difference <= 0)
-                    throw newError(
-                        "BLoqueado: La hora de ejecucion ya paso o falta menos de una hora."
-                    );
+            if (batch.status !== "CANCELED") {
+                throw new Error("Solo se puede reprogramar un lote cancelado.");
             }
-            batch.scheduledAt = newDate;
+
+            batch.scheduledAt = new Date(newDate);
+            batch.status = "PENDING";
+
             await batch.save();
 
             res.json({ success: true, response: batch });
