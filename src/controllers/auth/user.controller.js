@@ -72,23 +72,20 @@ const userController = {
     },
     updateOne: async (req, res, next) => {
         const id = req.params.id;
-        let el;
-        let success = true;
-        let error = null;
+
+        // ✅ Si viene contraseña nueva, la hasheamos antes de guardar
+        if (req.body.password) {
+            req.body.password = bcrypt.hashSync(req.body.password);
+        }
 
         try {
-            el = await User.findOneAndUpdate({ _id: id }, req.body, {
+            const el = await User.findOneAndUpdate({ _id: id }, req.body, {
                 new: true,
             });
+            res.json({ response: el, success: true, error: null });
         } catch (err) {
-            success = false;
-            error = err;
+            res.json({ response: null, success: false, error: err });
         }
-        res.json({
-            response: el,
-            success,
-            error,
-        });
     },
     softDeleteOne: async (req, res) => {
         try {
