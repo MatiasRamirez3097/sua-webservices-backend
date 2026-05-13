@@ -3,6 +3,9 @@ import bcrypt from "bcryptjs";
 
 const userController = {
     createOne: async (req, res, next) => {
+        if (req.body.role === "") req.body.role = null;
+        if (req.body.area === "") req.body.area = null;
+
         const hashPassword = bcrypt.hashSync(req.body.password);
         req.body.password = hashPassword;
 
@@ -15,13 +18,10 @@ const userController = {
         } catch (err) {
             success = false;
             error = err;
+            console.log("ERROR AL CREAR:", err.message); // ✅ así ves el error real
         }
 
-        res.json({
-            response: el,
-            success,
-            error,
-        });
+        res.json({ response: el, success, error });
     },
     getOne: async (req, res, next) => {
         const id = req.params.id;
@@ -73,7 +73,9 @@ const userController = {
     updateOne: async (req, res, next) => {
         const id = req.params.id;
 
-        // ✅ Si viene contraseña nueva, la hasheamos antes de guardar
+        if (req.body.role === "") req.body.role = null;
+        if (req.body.area === "") req.body.area = null;
+
         if (req.body.password) {
             req.body.password = bcrypt.hashSync(req.body.password);
         }
@@ -84,6 +86,7 @@ const userController = {
             });
             res.json({ response: el, success: true, error: null });
         } catch (err) {
+            console.log("ERROR AL ACTUALIZAR:", err.message);
             res.json({ response: null, success: false, error: err });
         }
     },
