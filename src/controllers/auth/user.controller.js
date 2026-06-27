@@ -83,6 +83,7 @@ const userController = {
         try {
             const el = await User.findOneAndUpdate({ _id: id }, req.body, {
                 new: true,
+                runValidators: false, // ✅ no valida campos que no vienen en el body
             });
             res.json({ response: el, success: true, error: null });
         } catch (err) {
@@ -107,6 +108,36 @@ const userController = {
             });
         } catch (error) {
             return res.status(500).json({ message: error.message });
+        }
+    },
+    changePassword: async (req, res) => {
+        const { currentPassword, newPassword } = req.body;
+        const userId = req.user._id;
+
+        try {
+            const user = await User.findById(userId);
+            if (!user)
+                return res
+                    .status(404)
+                    .json({ success: false, error: "Usuario no encontrado" });
+
+            const isValid = bcrypt.compareSync(currentPassword, user.password);
+            if (!isValid)
+                return res.status(400).json({
+                    success: false,
+                    error: "La contraseña actual es incorrecta",
+                });
+
+            // ✅ Usamos save() directamente para evitar validación del documento completo
+            user.password = bcrypt.hashSync(newPassword);
+            await user.save({ validateBeforeSave: false });
+
+            res.json({
+                success: true,
+                message: "Contraseña actualizada correctamente",
+            });
+        } catch (err) {
+            res.status(500).json({ success: false, error: err.message });
         }
     },
 };
