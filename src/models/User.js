@@ -22,18 +22,56 @@ const UserSchema = new Schema(
         },
         role: {
             type: String,
-            enum: ["admin", "manager", "reader"],
-            default: "reader",
+            enum: ["admin", "fiscalizado"],
+            default: null,
+        },
+        area: {
+            type: String,
+            enum: [
+                "Arbolado",
+                "Espacios Verdes",
+                "Control de Vectores",
+                "Escuela de jardineria",
+                "Vivero",
+                "Taller",
+                "Despacho",
+                "Paisajismo",
+                "Inspeccion",
+                "Centralizacion",
+                "Procesamiento de datos",
+                "Departamento Tecnico",
+                "Centro de Informatica",
+                "Direccion administrativa",
+                "Direccion General",
+                "Subdireccion General",
+                null,
+            ],
+            default: null,
+        },
+        permissions: {
+            type: [
+                {
+                    module: {
+                        type: String,
+                        enum: ["rodados", "estadocargas", "gestionsua"],
+                        required: true,
+                    },
+                    role: {
+                        type: String,
+                        enum: ["manager", "operator", "viewer"],
+                        required: true,
+                    },
+                },
+            ],
+            default: [],
         },
     },
-    {
-        timestamps: true,
-    }
+    { timestamps: true },
 );
 
 UserSchema.plugin(mongooseDelete, {
-    deletedAt: true, // Guarda la fecha de borrado
-    overrideMethods: "all", // ¡CLAVE! Sobrescribe find, findOne, count, etc.
+    deletedAt: true,
+    overrideMethods: "all", // Sobrescribe find, findOne, count, etc.
 });
 
 const User = model("User", UserSchema);

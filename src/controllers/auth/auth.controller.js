@@ -14,15 +14,15 @@ const authController = {
             if (!passValidated)
                 throw new Error("The email/password is incorrect");
 
-            const { email, name, role } = user;
+            const { email, name, surname, role, area, permissions } = user;
 
             const token = jwt.sign({ email }, process.env.SECRET_KEY);
 
             return res.status(200).json({
                 success: true,
                 token: token,
-                user: { email, name, role },
-                message: "Sign in succesfully",
+                user: { email, name, surname, role, area, permissions }, // ✅
+                message: "Sign in successfully",
             });
         } catch (err) {
             console.log(err);
@@ -61,14 +61,13 @@ const authController = {
         }
     },
     loginWithToken: (req, res) => {
-        const { email, name, role } = req.user;
-
-        res.json({
-            success: true,
-            user: { email, name, role },
-            message: "Sign in successfully",
-        });
-    },
+    const { email, name, surname, role, area, permissions } = req.user;
+    res.json({
+        success: true,
+        user: { email, name, surname, role, area, permissions }, 
+        message: "Sign in successfully",
+    });
+},
 };
 
 export default authController;
