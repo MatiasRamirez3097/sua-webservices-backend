@@ -42,12 +42,12 @@ const buildStrategy = (item) => {
                 payload: {
                     // API Externa (Español) : Tus Datos (Inglés/Genéricos)
                     fecha: date, // Viene de batch.date
-                    usuario: apiUser, // El usuario calculado arriba
+                    //usuario: apiUser, // El usuario calculado arriba
                     solucion: cleanText(extraData.legend), // Mapeamos 'leyenda' a 'solucion'
                     //tipo: Number(extraData.tipoResolucion), // Aseguramos que sea número (0, 1, 2)
                     idArea: idArea, // Hardcodeado o variable según necesites
                     //id_motivo_cierre: Number(extraData.id_motivo_cierre),
-                    image: "", // Campo obligatorio aunque vaya vacío
+                    //image: "", // Campo obligatorio aunque vaya vacío
                 },
             };
 
@@ -127,7 +127,7 @@ export const startScheduler = () => {
                     const { url, payload } = buildStrategy(item);
                     console.log(url);
                     console.log(payload);
-                    const res = await axios.post(url, payload, {
+                    const res = await axios.put(url, payload, {
                         headers: {
                             "X-Gravitee-Api-Key": process.env.ROSARIO_API_KEY,
                             "Content-Type": "application/json; charset=utf-8",
