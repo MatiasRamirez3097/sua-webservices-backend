@@ -9,15 +9,25 @@ const BatchSchema = new Schema(
             required: true,
             // Opcional: Pasarlos a inglés si el frontend también cambia
             // RESOLUTION, INTERVENTION, ASSIGNMENT
-            enum: ["RESOLUCION", "INTERVENCION", "ASIGNACION"],
+            enum: ["RESOLUCION", "DERIVACION", "INTERVENCION", "ASIGNACION"],
         },
 
+        // Área que resuelve (RESOLUCION). En DERIVACION el área destino
+        // va en extraData.idAreaDerivada.
         idArea: {
             type: Number,
-            required: true,
+            required: function () {
+                return this.processType === "RESOLUCION";
+            },
         },
         // 2. Metadata
-        date: { type: String, required: true },
+        // Fecha de resolución "DD/MM/YYYY HH:MM:SS" (la API de derivar no usa fecha)
+        date: {
+            type: String,
+            required: function () {
+                return this.processType === "RESOLUCION";
+            },
+        },
 
         user: {
             type: Schema.Types.ObjectId,
@@ -45,7 +55,7 @@ const BatchSchema = new Schema(
         status: {
             // Cambio: state -> status
             type: String,
-            enum: ["PENDING", "PROCESSING", "COMPLETED"], // Cambio: Inglés
+            enum: ["PENDING", "PROCESSING", "COMPLETED", "CANCELED"],
             default: "PENDING",
         },
     },

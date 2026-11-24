@@ -20,9 +20,18 @@ const UserSchema = new Schema(
             type: String,
             required: true,
         },
-        role: {
+        // Se usa para invalidar los tokens emitidos antes de un cambio/blanqueo
+        passwordChangedAt: { type: Date, default: null },
+        // Roles (ver src/utils/roles.js)
+        isAdmin: { type: Boolean, default: false },
+        suaRole: {
             type: String,
-            enum: ["admin", "fiscalizado"],
+            enum: ["consulta", "operador", "supervisor", null],
+            default: null,
+        },
+        rodadosRole: {
+            type: String,
+            enum: ["solicitante", "encargado", null],
             default: null,
         },
         area: {
@@ -48,25 +57,22 @@ const UserSchema = new Schema(
             ],
             default: null,
         },
-        permissions: {
-            type: [
-                {
-                    module: {
-                        type: String,
-                        enum: ["rodados", "estadocargas", "gestionsua"],
-                        required: true,
-                    },
-                    role: {
-                        type: String,
-                        enum: ["manager", "operator", "viewer"],
-                        required: true,
-                    },
-                },
-            ],
-            default: [],
+    },
+    {
+        timestamps: true,
+        // Nunca devolver el hash de la contraseña en las respuestas JSON
+        toJSON: {
+            transform: (_doc, ret) => {
+                delete ret.password;
+                delete ret.passwordChangedAt;
+                delete ret.__v;
+                // Restos del esquema de roles anterior (ver utils/migrateRoles.js)
+                delete ret.role;
+                delete ret.permissions;
+                return ret;
+            },
         },
     },
-    { timestamps: true },
 );
 
 UserSchema.plugin(mongooseDelete, {
