@@ -1,9 +1,11 @@
 const validator = (schema) => (req, res, next) => {
-    const validation = schema.validate(req.body, { aborEarly: true });
+    const validation = schema.validate(req.body, { abortEarly: true });
 
     if (validation.error) {
-        console.log(validation);
-        return;
+        return res.status(400).json({
+            success: false,
+            error: validation.error.details?.[0]?.message || "Datos inválidos",
+        });
     }
     return next();
 };

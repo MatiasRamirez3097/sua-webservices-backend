@@ -1,73 +1,120 @@
 import User from "../../models/User.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import "dotenv/config.js";
+import { escapeRegex } from "../../utils/regex.util.js";
+import { validatePassword } from "../../utils/password.util.js";
+import { publicUser, signToken } from "../../utils/token.util.js";
+import {
+    clearLoginFailures,
+    isLoginBlocked,
+    registerLoginFailure,
+} from "../../utils/loginLimiter.js";
+
+// Mensaje único para cualquier fallo de credenciales: no revelamos si el
+// usuario existe ni si lo incorrecto fue el email o la contraseña.
+const GENERIC_ERROR = "Usuario o contraseña incorrectos";
+
+// Hash dummy para que el tiempo de respuesta sea similar exista o no el usuario
+const DUMMY_HASH = bcrypt.hashSync("dummy-password-for-timing", 10);
 
 const authController = {
-    signIn: async (req, res, next) => {
-        console.log(req.body);
+    signIn: async (req, res) => {
+        const { email: emailBody, password } = req.body ?? {};
+        const ip = req.ip;
+
+        if (isLoginBlocked(ip, emailBody)) {
+            return res.status(429).json({
+                success: false,
+                error: "Demasiados intentos fallidos. Esperá unos minutos e intentá nuevamente.",
+                code: "TOO_MANY_ATTEMPTS",
+            });
+        }
+
         try {
-            const { email: emailBody, password } = req.body;
-            const user = await User.findOne({ email: emailBody });
-            if (!user) throw new Error("No user exists with this email");
-            const passValidated = bcrypt.compareSync(password, user.password);
-            if (!passValidated)
-                throw new Error("The email/password is incorrect");
+            if (!emailBody || !password) {
+                return res.status(401).json({
+                    success: false,
+                    error: GENERIC_ERROR,
+                    code: "INVALID_CREDENTIALS",
+                });
+            }
 
-            const { email, name, surname, role, area, permissions } = user;
+            // Búsqueda exacta pero sin distinguir mayúsculas/minúsculas
+            const user = await User.findOne({
+                email: {
+                    $regex: `^${escapeRegex(String(emailBody).trim())}$`,
+                    $options: "i",
+                },
+            });
 
-            const token = jwt.sign({ email }, process.env.SECRET_KEY);
+            const passValidated = bcrypt.compareSync(
+                String(password),
+                user?.password || DUMMY_HASH,
+            );
+
+            if (!user || !passValidated) {
+                registerLoginFailure(ip, emailBody);
+                return res.status(401).json({
+                    success: false,
+                    error: GENERIC_ERROR,
+                    code: "INVALID_CREDENTIALS",
+                });
+            }
+
+            clearLoginFailures(ip, emailBody);
 
             return res.status(200).json({
                 success: true,
-                token: token,
-                user: { email, name, surname, role, area, permissions }, // ✅
+                token: signToken(user),
+                user: publicUser(user),
                 message: "Sign in successfully",
             });
         } catch (err) {
-            console.log(err);
-            return res.status(400).json({
-                response: err.name,
+            console.error("Error en signIn:", err);
+            return res.status(500).json({
                 success: false,
-                error: err.message,
-                code: "NO_USER_EXISTS",
+                error: "No se pudo iniciar sesión. Intentá nuevamente.",
+                code: "SERVER_ERROR",
             });
         }
     },
-    signUp: async (req, res, next) => {
-        let user;
-        let token;
 
+    // Alta de usuario (solo admin, ver auth.routes.js)
+    signUp: async (req, res) => {
+        const passwordError = validatePassword(req.body?.password);
+        if (passwordError)
+            return res.status(400).json({ success: false, error: passwordError });
         try {
-            const hashPassword = bcrypt.hashSync(req.body.password);
-            req.body.password = hashPassword;
-            user = await User.create(req.body);
-
-            const { email, name } = user;
-            token = jwt.sign({ email }, process.env.SECRET_KEY);
-            return res.status(200).json({
+            const { email, name, surname, password } = req.body;
+            const user = await User.create({
+                email: String(email).trim(),
+                name,
+                surname,
+                password: bcrypt.hashSync(password),
+            });
+            return res.status(201).json({
                 success: true,
-                token: token,
-                user: { email, name },
-                message: "Sign in succesfully",
+                user: publicUser(user),
+                message: "Usuario creado",
             });
         } catch (err) {
             return res.status(400).json({
-                response: err.name,
                 success: false,
-                error: err.message,
+                error:
+                    err?.code === 11000
+                        ? "Ya existe un usuario con ese email."
+                        : "No se pudo crear el usuario.",
                 code: "USER_EXISTS",
             });
         }
     },
+
     loginWithToken: (req, res) => {
-    const { email, name, surname, role, area, permissions } = req.user;
-    res.json({
-        success: true,
-        user: { email, name, surname, role, area, permissions }, 
-        message: "Sign in successfully",
-    });
-},
+        res.json({
+            success: true,
+            user: publicUser(req.user),
+            message: "Sign in successfully",
+        });
+    },
 };
 
 export default authController;

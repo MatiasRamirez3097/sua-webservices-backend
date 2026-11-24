@@ -10,9 +10,13 @@ const BatchItemSchema = new Schema(
             required: true,
         },
 
-        // 2. Identificación del Expediente (Record ID)
-        sua: { type: String, required: true }, // "sua" es sigla, se queda igual
-        year: { type: String, required: true }, // anio -> year
+        // 2. Identificación de la solicitud
+        // API SUA v2: cada solicitud se identifica solo por su id numérico.
+        requestId: { type: String, trim: true },
+        // LEGACY (API v1): número de SUA + año. Se conservan solo para poder
+        // mostrar lotes viejos; los lotes nuevos no los usan.
+        sua: { type: String },
+        year: { type: String },
 
         // 3. Datos Específicos (Optional)
         // Por si un item necesita algo que no está en el batch

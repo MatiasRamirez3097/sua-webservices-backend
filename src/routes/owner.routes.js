@@ -1,18 +1,15 @@
 import { Router } from "express";
-// Asegúrate de que el nombre del archivo coincida (resolucionesController.js o resoluciones.controller.js)
 import ownerController from "../controllers/rodados/owner.controller.js";
+import { requireAuth, requirePermission } from "../middlewares/auth.js";
+import { PERMISSIONS as P } from "../utils/roles.js";
 
-import passport from "../middlewares/passport.js";
-
-const { createOne, deleteOne, getAll, getOne } = ownerController;
-
-const authMiddleware = passport.authenticate("jwt", { session: false });
+const { createOne, getAll, getOne } = ownerController;
 
 const ownerRoutes = Router();
+ownerRoutes.use(requireAuth, requirePermission(P.RODADOS_SOLICITAR, P.RODADOS_FLOTA));
 
-ownerRoutes.get(["/", "/:search"], getAll);
-ownerRoutes.post("/", authMiddleware, createOne);
 ownerRoutes.get("/getone/:id", getOne);
-//driverRoutes.delete("/deleteone/:id", deleteOne);
+ownerRoutes.get(["/", "/:search"], getAll);
+ownerRoutes.post("/", requirePermission(P.RODADOS_FLOTA), createOne);
 
 export default ownerRoutes;

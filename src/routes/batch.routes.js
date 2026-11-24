@@ -1,19 +1,26 @@
 import { Router } from "express";
-// Asegúrate de que el nombre del archivo coincida (resolucionesController.js o resoluciones.controller.js)
 import batchController from "../controllers/sua/batch.controller.js";
+import { requireAuth, requirePermission } from "../middlewares/auth.js";
+import { PERMISSIONS as P } from "../utils/roles.js";
 
-import passport from "../middlewares/passport.js";
+const { cancel, createOne, deleteOne, getAll, getOne, reschedule } =
+    batchController;
 
-const { createOne, deleteOne, getAll, getOne, reschedule } = batchController;
-
-const authMiddleware = passport.authenticate("jwt", { session: false });
+const canView = requirePermission(P.LOTES_VER);
+const canCreate = requirePermission(P.LOTES_CREAR);
+// Cancelar / reprogramar: los propios o cualquiera (el controlador revisa
+// que el lote sea del usuario si solo tiene "gestionar propios")
+const canManage = requirePermission(P.LOTES_GESTIONAR_PROPIOS, P.LOTES_GESTIONAR_TODOS);
+const canDelete = requirePermission(P.LOTES_GESTIONAR_TODOS);
 
 const batchRoutes = Router();
+batchRoutes.use(requireAuth);
 
-batchRoutes.get(["/", "/:search"], getAll);
-batchRoutes.post("/", authMiddleware, createOne);
-batchRoutes.get("/getone/:id", getOne);
-batchRoutes.patch("/reschedule/:id", reschedule);
-batchRoutes.delete("/deleteone/:id", deleteOne);
+batchRoutes.get("/", canView, getAll);
+batchRoutes.get("/getone/:id", canView, getOne);
+batchRoutes.post("/", canCreate, createOne);
+batchRoutes.patch("/cancel/:id", canManage, cancel);
+batchRoutes.patch("/reschedule/:id", canManage, reschedule);
+batchRoutes.delete("/deleteone/:id", canDelete, deleteOne);
 
 export default batchRoutes;

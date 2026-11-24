@@ -1,4 +1,5 @@
 import Owner from "../../models/Owner.js";
+import { startsWith } from "../../utils/regex.util.js";
 
 const ownerController = {
     createOne: async (req, res, next) => {
@@ -39,12 +40,7 @@ const ownerController = {
     },
     getAll: async (req, res, next) => {
         const search = req.params.search
-            ? {
-                  name: {
-                      $regex: "^" + req.params.search + ".*",
-                      $options: "i",
-                  },
-              }
+            ? { name: startsWith(req.params.search) }
             : {};
 
         let success = true;

@@ -1,4 +1,5 @@
 import Driver from "../../models/Driver.js";
+import { startsWith } from "../../utils/regex.util.js";
 
 const driverController = {
     createOne: async (req, res, next) => {
@@ -39,12 +40,7 @@ const driverController = {
     },
     getAll: async (req, res, next) => {
         const search = req.params.search
-            ? {
-                  name: {
-                      $regex: "^" + req.params.search + ".*",
-                      $options: "i",
-                  },
-              }
+            ? { name: startsWith(req.params.search) }
             : {};
 
         let success = true;
