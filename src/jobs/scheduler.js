@@ -42,8 +42,14 @@ const getRequestId = (item) => {
     return encodeURIComponent(id);
 };
 
+// ROSARIO_API_URL es la base de la API en el gateway, sin versión
+// (ej: https://t-apimgw.rosario.gob.ar/sua-api). La versión va en cada
+// endpoint porque no todos usan la misma.
+const apiUrl = (path) =>
+    `${String(process.env.ROSARIO_API_URL ?? "").replace(/\/+$/, "")}${path}`;
+
 const solicitudUrl = (item, action) =>
-    `${process.env.ROSARIO_API_URL}/solicitudes/${getRequestId(item)}/${action}`;
+    apiUrl(`/v2/solicitudes/${getRequestId(item)}/${action}`);
 
 // Construye URL + body según el tipo de proceso del lote
 export const buildStrategy = (item) => {
